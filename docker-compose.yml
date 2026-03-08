@@ -1,0 +1,82 @@
+services:
+  db:
+    image: mysql:8
+    container_name: buildwise_db
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: root
+      MYSQL_DATABASE: buildwise_dev
+      MYSQL_USER: buildwise
+      MYSQL_PASSWORD: buildwise
+    ports:
+      - "3306:3306"
+    volumes:
+      - db_data:/var/lib/mysql
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost", "-u", "buildwise", "-pbuildwise"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7-alpine
+    container_name: buildwise_redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+
+  api:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile.dev
+    container_name: buildwise_api
+    restart: unless-stopped
+    ports:
+      - "8090:8080"
+    environment:
+      APP_ENV: development
+      DB_DSN: "buildwise:buildwise@tcp(db:3306)/buildwise_dev?parseTime=true&charset=utf8mb4&loc=UTC"
+      REDIS_ADDR: "redis:6379"
+      JWT_SECRET: "local-dev-secret-ganti-di-production"
+      JWT_EXPIRES_HOURS: "24"
+      FONNTE_TOKEN: ""
+      R2_ACCOUNT_ID: ""
+      R2_ACCESS_KEY: ""
+      R2_SECRET_KEY: ""
+      R2_BUCKET: "buildwise-dev"
+      PORT: "8080"
+    depends_on:
+      db:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    volumes:
+      - ./backend:/app
+    working_dir: /app
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    container_name: buildwise_frontend
+    restart: unless-stopped
+    ports:
+      - "3010:5173"
+    environment:
+      VITE_API_URL: "http://localhost:8080"
+    volumes:
+      - ./frontend:/app
+      - /app/node_modules
+    working_dir: /app
+
+  adminer:
+    image: adminer
+    container_name: buildwise_adminer
+    restart: unless-stopped
+    ports:
+      - "8081:8080"
+    depends_on:
+      - db
+
+volumes:
+  db_data:
