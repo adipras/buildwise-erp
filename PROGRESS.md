@@ -6,8 +6,8 @@
 |---|---|---|
 | Setup & Infrastruktur | ✅ Selesai | Project structure, Docker, semua model |
 | Auth & RBAC | ✅ Selesai | Backend + Frontend lengkap |
-| Modul RAB & Anggaran | 🔲 Belum mulai | |
-| Modul Jadwal & Progress | 🔲 Belum mulai | |
+| Modul RAB & Anggaran | ✅ Selesai | Backend + Frontend lengkap |
+| Modul Jadwal & Progress | ✅ Selesai | Backend + Frontend lengkap |
 | Modul Material & Stok | 🔲 Belum mulai | |
 | Modul Tenaga Kerja | 🔲 Belum mulai | |
 | Dashboard & Laporan | 🔲 Belum mulai | |
@@ -103,38 +103,62 @@
 
 ---
 
-## 🔲 FASE 3 — Modul RAB & Anggaran
+## ✅ FASE 3 — Modul RAB & Anggaran (Selesai)
+
+### Yang Sudah Dibuat
 
 **Backend:**
-- [ ] CRUD Proyek (`/proyek`)
-- [ ] CRUD RAB Item (`/proyek/:id/rab`) + lock RAB
-- [ ] Catat pengeluaran + laporan laba-rugi
-- [ ] Kalkulasi realisasi real-time (sum pengeluaran per rab_item_id)
-- [ ] Alert 80% / 100% anggaran
+- [x] `repository/proyek_repo.go` — CRUD proyek + `GetTotalRab` / `GetTotalRealisasi`
+- [x] `repository/rab_repo.go` — CRUD RAB item + `LockAll` / `GetStatusLock`
+- [x] `repository/pengeluaran_repo.go` — CRUD pengeluaran (soft delete) + `SumByRabItem`
+- [x] `service/proyek_service.go` — `ProyekSummary` dengan alert_level warning/danger
+- [x] `service/rab_service.go` — CRUD + LockRab, `ErrRabLocked` → HTTP 403, `TotalAnggaran = Volume × HargaSatuan`
+- [x] `service/pengeluaran_service.go` — CRUD pengeluaran
+- [x] `handler/proyek_handler.go`, `rab_handler.go`, `pengeluaran_handler.go` — 14 route baru
+- [x] `router/router.go` — RBAC: owner+manajer CRUD; owner-only delete proyek & lock RAB
 
 **Frontend:**
-- [ ] Halaman daftar proyek dengan progress card
-- [ ] Halaman RAB — tabel interaktif, progress bar, donut chart (recharts)
-- [ ] Form tambah/edit item RAB
-- [ ] Tombol "Kunci RAB" + dialog konfirmasi
-- [ ] Alert banner anggaran mendekati batas
+- [x] `AppLayout` + `Sidebar` — navigasi responsif, mobile hamburger, user info, logout
+- [x] `ProyekCard` — status badge, progress bar (alert_level aware), format Rupiah
+- [x] `pages/Proyek/index.tsx` — grid + filter 5 status + skeleton + empty state + modal tambah
+- [x] `pages/Proyek/ProyekDetail.tsx` — tabs RAB / Jadwal / Pengeluaran / Info + modal edit
+- [x] `components/Proyek/RabTab.tsx` — donut chart, summary cards, alert banner, tabel, lock RAB + confirm
+- [x] `components/Proyek/PengeluaranTab.tsx` — tabel, total, modal form catat pengeluaran
+- [x] `hooks/useProyek.ts` — semua query + mutation hooks (TanStack Query v5)
+
+### Verifikasi
+```
+✅ go build ./...  → 0 error
+✅ tsc --noEmit    → 0 error TypeScript
+```
 
 ---
 
-## 🔲 FASE 4 — Modul Jadwal & Progress
+## ✅ FASE 4 — Modul Jadwal & Progress (Selesai)
+
+### Yang Sudah Dibuat
 
 **Backend:**
-- [ ] CRUD Milestone
-- [ ] POST progress update + upload foto (pre-signed R2 URL)
-- [ ] GET kurva-s → `[{minggu, plan_kumulatif, aktual_kumulatif}]`
-- [ ] Kalkulasi weighted average progress proyek
-- [ ] Auto-set status `TERLAMBAT` jika actual < planned - 10
+- [x] `repository/milestone_repo.go` — CRUD + `GetWeightedProgress` (SQL weighted-avg) + `GetCurrentPlannedProgress`
+- [x] `repository/progress_repo.go` — CRUD ProgressUpdate + FotoProgress (soft delete)
+- [x] `repository/kurvas_repo.go` — `KurvaSPoint` + `GetKurvaS` (iterasi per minggu, plan & aktual kumulatif)
+- [x] `service/jadwal_service.go` — CRUD milestone + `computeStatus()` otomatis (selesai/terlambat/sedang_berjalan/belum_mulai)
+- [x] `service/progress_service.go` — CreateProgress: replace `actual_persen`, recalc status, simpan foto
+- [x] `handler/jadwal_handler.go` — 10 endpoint + router update dengan RBAC
 
 **Frontend:**
-- [ ] Gantt chart (CSS murni, tanpa library)
-- [ ] Kurva S LineChart (recharts)
-- [ ] Form update progress mobile-friendly (slider, foto, catatan)
-- [ ] Badge status dengan animasi pulse untuk TERLAMBAT
+- [x] `hooks/useJadwal.ts` — semua query + mutation (milestone, progress, kurva-s, summary)
+- [x] `components/Proyek/JadwalTab.tsx` — summary card, Kurva S, Gantt, list milestone + modal
+- [x] `components/Proyek/GanttChart.tsx` — CSS murni, bar posisi %, garis "Hari Ini", tooltip hover
+- [x] `components/Proyek/KurvaSChart.tsx` — Recharts LineChart (plan putus-putus vs aktual solid)
+- [x] `components/Proyek/MilestoneCard.tsx` — badge status, dual progress bar, `animate-pulse` untuk TERLAMBAT
+- [x] `components/Proyek/ProgressUpdateModal.tsx` — slider besar mobile-friendly, catatan, multi-foto
+
+### Verifikasi
+```
+✅ go build ./...  → 0 error
+✅ tsc --noEmit    → 0 error TypeScript
+```
 
 ---
 
@@ -212,13 +236,13 @@
 ```
 Setup & Infrastruktur  ████████████████████  100%  ✅
 Auth & RBAC            ████████████████████  100%  ✅
-RAB & Anggaran         ░░░░░░░░░░░░░░░░░░░░    0%
-Jadwal & Progress      ░░░░░░░░░░░░░░░░░░░░    0%
+RAB & Anggaran         ████████████████████  100%  ✅
+Jadwal & Progress      ████████████████████  100%  ✅
 Material & Stok        ░░░░░░░░░░░░░░░░░░░░    0%
 Tenaga Kerja           ░░░░░░░░░░░░░░░░░░░░    0%
 Dashboard & Laporan    ░░░░░░░░░░░░░░░░░░░░    0%
 Notifikasi             ░░░░░░░░░░░░░░░░░░░░    0%
 Deployment             ░░░░░░░░░░░░░░░░░░░░    0%
 ─────────────────────────────────────────────
-Total                  ████░░░░░░░░░░░░░░░░   ~22%
+Total                  █████████░░░░░░░░░░░   ~44%
 ```
