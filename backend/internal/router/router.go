@@ -21,6 +21,7 @@ func Setup(app *fiber.App) {
 	proyekH := handler.NewProyekHandler()
 	rabH := handler.NewRabHandler()
 	pengeluaranH := handler.NewPengeluaranHandler()
+	jadwalH := handler.NewJadwalHandler()
 
 	// Route publik
 	api.Post("/auth/login", authH.Login)
@@ -61,4 +62,16 @@ func Setup(app *fiber.App) {
 	priv.Get("/proyek/:id/pengeluaran", pengeluaranH.ListPengeluaran)
 	priv.Post("/proyek/:id/pengeluaran", pengeluaranH.CreatePengeluaran)
 	priv.Delete("/proyek/:id/pengeluaran/:pel_id", ownerManajer, pengeluaranH.DeletePengeluaran)
+
+	// Milestone & Progress — owner+manajer bisa CRUD milestone; semua member bisa baca & tambah progress; owner+manajer bisa delete progress
+	priv.Get("/proyek/:id/milestone", jadwalH.ListMilestone)
+	priv.Post("/proyek/:id/milestone", ownerManajer, jadwalH.CreateMilestone)
+	priv.Get("/proyek/:id/milestone/:mid", jadwalH.GetMilestone)
+	priv.Patch("/proyek/:id/milestone/:mid", ownerManajer, jadwalH.UpdateMilestone)
+	priv.Delete("/proyek/:id/milestone/:mid", ownerManajer, jadwalH.DeleteMilestone)
+	priv.Post("/proyek/:id/milestone/:mid/progress", jadwalH.CreateProgress)
+	priv.Get("/proyek/:id/milestone/:mid/progress", jadwalH.ListProgress)
+	priv.Delete("/proyek/:id/milestone/:mid/progress/:pid", ownerManajer, jadwalH.DeleteProgress)
+	priv.Get("/proyek/:id/kurva-s", jadwalH.GetKurvaS)
+	priv.Get("/proyek/:id/progress-summary", jadwalH.GetProgressSummary)
 }
