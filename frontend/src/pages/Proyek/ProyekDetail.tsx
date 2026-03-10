@@ -10,6 +10,7 @@ import { useAuth } from '../../hooks/useAuth'
 import { formatRupiah, formatTanggal } from '../../utils/format'
 import RabTab from '../../components/Proyek/RabTab'
 import PengeluaranTab from '../../components/Proyek/PengeluaranTab'
+import JadwalTab from '../../components/Proyek/JadwalTab'
 
 // ─── Status badge config ──────────────────────────────────────────────────────
 const STATUS_CONFIG: Record<StatusProyek, { label: string; bg: string; text: string }> = {
@@ -139,7 +140,7 @@ function EditProyekModal({
 }
 
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
-type Tab = 'rab' | 'pengeluaran' | 'info'
+type Tab = 'rab' | 'jadwal' | 'pengeluaran' | 'info'
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function ProyekDetailPage() {
@@ -182,6 +183,7 @@ export default function ProyekDetailPage() {
   const status = STATUS_CONFIG[proyek.status] ?? STATUS_CONFIG.aktif
   const tabs: { id: Tab; label: string }[] = [
     { id: 'rab',         label: 'RAB'         },
+    { id: 'jadwal',      label: 'Jadwal'      },
     { id: 'pengeluaran', label: 'Pengeluaran' },
     { id: 'info',        label: 'Info'        },
   ]
@@ -253,6 +255,7 @@ export default function ProyekDetailPage() {
       {/* Tab content */}
       <div>
         {activeTab === 'rab' && id && <RabTab proyekId={id} />}
+        {activeTab === 'jadwal' && id && <JadwalTab proyekId={id} />}
         {activeTab === 'pengeluaran' && id && <PengeluaranTab proyekId={id} />}
         {activeTab === 'info' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">

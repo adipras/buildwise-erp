@@ -112,3 +112,34 @@ export interface ApiListResponse<T> {
   page: number
   limit: number
 }
+
+export interface FotoProgress {
+  id: string
+  progress_id: string
+  url: string
+  created_at: string
+}
+
+export interface ProgressUpdate {
+  id: string
+  milestone_id: string
+  proyek_id: string
+  persen: number
+  catatan?: string
+  foto?: FotoProgress[]
+  dibuat_oleh?: User
+  created_at: string
+}
+
+export interface KurvaSPoint {
+  minggu: number
+  tanggal: string
+  plan_kumulatif: number
+  aktual_kumulatif: number
+}
+
+export interface ProgressSummary {
+  weighted_actual: number
+  weighted_planned: number
+  is_late: boolean
+}
