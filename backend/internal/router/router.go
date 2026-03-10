@@ -18,6 +18,9 @@ func Setup(app *fiber.App) {
 	// Handler instances
 	authH := handler.NewAuthHandler()
 	userH := handler.NewUserHandler()
+	proyekH := handler.NewProyekHandler()
+	rabH := handler.NewRabHandler()
+	pengeluaranH := handler.NewPengeluaranHandler()
 
 	// Route publik
 	api.Post("/auth/login", authH.Login)
@@ -30,10 +33,32 @@ func Setup(app *fiber.App) {
 	priv.Post("/auth/logout", authH.Logout)
 	priv.Get("/auth/me", authH.Me)
 
-	// User management — hanya owner
+	// Role helpers
 	ownerOnly := middleware.RequireRoles(string(model.RoleOwner))
+	ownerManajer := middleware.RequireRoles(string(model.RoleOwner), string(model.RoleManajer))
+
+	// User management — hanya owner
 	priv.Get("/users", ownerOnly, userH.ListUsers)
 	priv.Post("/users", ownerOnly, userH.CreateUser)
 	priv.Patch("/users/:id", ownerOnly, userH.UpdateUser)
 	priv.Delete("/users/:id", ownerOnly, userH.DeleteUser)
+
+	// Proyek — semua role bisa baca, owner+manajer bisa create/update, owner saja bisa delete
+	priv.Get("/proyek", proyekH.ListProyek)
+	priv.Post("/proyek", ownerManajer, proyekH.CreateProyek)
+	priv.Get("/proyek/:id", proyekH.GetProyek)
+	priv.Patch("/proyek/:id", ownerManajer, proyekH.UpdateProyek)
+	priv.Delete("/proyek/:id", ownerOnly, proyekH.DeleteProyek)
+
+	// RAB — semua role bisa baca, owner+manajer bisa create/update/delete, owner saja bisa lock
+	priv.Get("/proyek/:id/rab", rabH.ListRab)
+	priv.Post("/proyek/:id/rab", ownerManajer, rabH.CreateRabItem)
+	priv.Post("/proyek/:id/rab/lock", ownerOnly, rabH.LockRab)
+	priv.Patch("/proyek/:id/rab/:item_id", ownerManajer, rabH.UpdateRabItem)
+	priv.Delete("/proyek/:id/rab/:item_id", ownerManajer, rabH.DeleteRabItem)
+
+	// Pengeluaran — semua role bisa baca dan create, owner+manajer bisa delete
+	priv.Get("/proyek/:id/pengeluaran", pengeluaranH.ListPengeluaran)
+	priv.Post("/proyek/:id/pengeluaran", pengeluaranH.CreatePengeluaran)
+	priv.Delete("/proyek/:id/pengeluaran/:pel_id", ownerManajer, pengeluaranH.DeletePengeluaran)
 }

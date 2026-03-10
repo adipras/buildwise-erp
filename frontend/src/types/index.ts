@@ -25,6 +25,10 @@ export interface Proyek {
   manajer?: User
   perusahaan_id: string
   created_at: string
+  total_rab?: number
+  total_realisasi?: number
+  persen_realisasi?: number
+  alert_level?: AlertLevel
 }
 
 export type StatusRab = 'draft' | 'locked'
@@ -39,6 +43,8 @@ export interface RabItem {
   harga_satuan: number
   total_anggaran: number
   status: StatusRab
+  total_realisasi?: number
+  persen_realisasi?: number
 }
 
 export type StatusMilestone = 'belum_mulai' | 'sedang_berjalan' | 'selesai' | 'terlambat'
@@ -77,6 +83,21 @@ export interface Notifikasi {
   pesan: string
   is_read: boolean
   is_sent_wa: boolean
+  created_at: string
+}
+
+export type AlertLevel = 'normal' | 'warning' | 'danger'
+
+export interface Pengeluaran {
+  id: string
+  proyek_id: string
+  rab_item_id?: string
+  rab_item?: RabItem
+  kategori: string
+  deskripsi: string
+  jumlah: number
+  tgl_pengeluaran: string
+  dibuat_oleh?: User
   created_at: string
 }
 
