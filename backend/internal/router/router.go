@@ -15,27 +15,25 @@ func Setup(app *fiber.App) {
 	// Semua route API di bawah prefix /api/v1
 	api := app.Group("/api/v1")
 
+	// Handler instances
+	authH := handler.NewAuthHandler()
+	userH := handler.NewUserHandler()
+
 	// Route publik
-	// api.Post("/auth/login", handler.Login)
-	// api.Post("/auth/refresh", handler.RefreshToken)
+	api.Post("/auth/login", authH.Login)
+	api.Post("/auth/refresh", authH.RefreshToken)
 
-	// Route privat — stack middleware: JWT → Tenant → RequireRoles
-	auth := api.Group("", middleware.JWTMiddleware(), middleware.TenantMiddleware())
+	// Route privat — stack middleware: JWT → Tenant
+	priv := api.Group("", middleware.JWTMiddleware(), middleware.TenantMiddleware())
 
-	// Auth
-	// auth.Post("/auth/logout", handler.Logout)
-	// auth.Get("/auth/me", handler.Me)
+	// Auth (privat)
+	priv.Post("/auth/logout", authH.Logout)
+	priv.Get("/auth/me", authH.Me)
 
-	// User management (hanya owner)
-	// auth.Get("/users", middleware.RequireRoles(string(model.RoleOwner)), handler.ListUsers)
-
-	// Proyek
-	// auth.Post("/proyek", middleware.RequireRoles(string(model.RoleOwner), string(model.RoleManajer)), handler.CreateProyek)
-
-	// Notifikasi
-	// auth.Get("/notifikasi", handler.ListNotifikasi)
-
-	// Gunakan variabel auth & model agar tidak error "imported and not used"
-	_ = auth
-	_ = model.RoleOwner
+	// User management — hanya owner
+	ownerOnly := middleware.RequireRoles(string(model.RoleOwner))
+	priv.Get("/users", ownerOnly, userH.ListUsers)
+	priv.Post("/users", ownerOnly, userH.CreateUser)
+	priv.Patch("/users/:id", ownerOnly, userH.UpdateUser)
+	priv.Delete("/users/:id", ownerOnly, userH.DeleteUser)
 }

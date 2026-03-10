@@ -5,7 +5,7 @@
 | Fase | Status | Keterangan |
 |---|---|---|
 | Setup & Infrastruktur | ✅ Selesai | Project structure, Docker, semua model |
-| Auth & RBAC | 🔲 Belum mulai | |
+| Auth & RBAC | ✅ Selesai | Backend + Frontend lengkap |
 | Modul RAB & Anggaran | 🔲 Belum mulai | |
 | Modul Jadwal & Progress | 🔲 Belum mulai | |
 | Modul Material & Stok | 🔲 Belum mulai | |
@@ -63,20 +63,43 @@
 
 ---
 
-## 🔲 FASE 2 — Auth & RBAC
+## ✅ FASE 2 — Auth & RBAC (Selesai)
+
+### Yang Sudah Dibuat
 
 **Backend:**
-- [ ] `internal/service/auth_service.go` — login, refresh token, logout
-- [ ] `internal/repository/auth_repo.go` — cari user by email, simpan refresh token
-- [ ] `internal/handler/auth_handler.go` — POST /auth/login, /refresh, /logout, GET /auth/me
-- [ ] `internal/handler/user_handler.go` — CRUD user (hanya owner)
-- [ ] `cmd/seed/main.go` — seed 1 perusahaan + 4 user (1 per role)
+- [x] `internal/model/user.go` — tambah field `RefreshToken` (nullable, indexed)
+- [x] `internal/repository/auth_repo.go` — FindByEmail, FindByID, FindByRefreshToken, SaveRefreshToken, ClearRefreshToken
+- [x] `internal/repository/user_repo.go` — FindAll, FindByID, EmailExists, Create, Update
+- [x] `internal/service/auth_service.go` — Login (bcrypt), Refresh, Logout, Me + `issueTokens` (JWT + UUID refresh token)
+- [x] `internal/service/user_service.go` — ListUsers, CreateUser (bcrypt hash), UpdateUser, DeleteUser
+- [x] `internal/handler/auth_handler.go` — POST /auth/login, POST /auth/refresh, POST /auth/logout, GET /auth/me
+- [x] `internal/handler/user_handler.go` — GET/POST /users, PATCH/DELETE /users/:id (owner only)
+- [x] `internal/router/router.go` — semua route terdaftar dengan middleware stack
+- [x] `cmd/seed/main.go` — seed 1 perusahaan + 4 user (owner/manajer/mandor/admin_keuangan)
+- [x] `go.mod` — tambah `golang.org/x/crypto` untuk bcrypt
 
 **Frontend:**
-- [ ] `src/pages/Login.tsx` — form email/password, desain navy+accent
-- [ ] `src/hooks/useAuth.ts` — AuthContext, login/logout, simpan token ke localStorage
-- [ ] `src/components/ProtectedRoute.tsx` — redirect ke /login jika belum auth
-- [ ] Route guard di App.tsx
+- [x] `src/lib/api.ts` — axios instance + interceptor auto-attach token + auto-refresh 401
+- [x] `src/hooks/useAuth.tsx` — AuthContext + AuthProvider + useAuth hook (login/logout/restore session)
+- [x] `src/components/ProtectedRoute.tsx` — guard auth + optional role check + loading spinner
+- [x] `src/pages/Login.tsx` — form email/password (react-hook-form + zod), desain navy+accent
+- [x] `src/App.tsx` — AuthProvider wrapping, route guard aktif
+
+### Akun Seed
+| Role | Email | Password |
+|---|---|---|
+| owner | owner@buildwise.id | owner123 |
+| manajer | manajer@buildwise.id | manajer123 |
+| mandor | mandor@buildwise.id | mandor123 |
+| admin_keuangan | admin@buildwise.id | admin123 |
+
+### Verifikasi
+```
+✅ go build ./...       → berhasil (0 error)
+✅ go vet ./...         → clean
+✅ tsc --noEmit         → 0 error TypeScript
+```
 
 ---
 
@@ -188,7 +211,7 @@
 
 ```
 Setup & Infrastruktur  ████████████████████  100%  ✅
-Auth & RBAC            ░░░░░░░░░░░░░░░░░░░░    0%
+Auth & RBAC            ████████████████████  100%  ✅
 RAB & Anggaran         ░░░░░░░░░░░░░░░░░░░░    0%
 Jadwal & Progress      ░░░░░░░░░░░░░░░░░░░░    0%
 Material & Stok        ░░░░░░░░░░░░░░░░░░░░    0%
@@ -197,5 +220,5 @@ Dashboard & Laporan    ░░░░░░░░░░░░░░░░░░░
 Notifikasi             ░░░░░░░░░░░░░░░░░░░░    0%
 Deployment             ░░░░░░░░░░░░░░░░░░░░    0%
 ─────────────────────────────────────────────
-Total                  ██░░░░░░░░░░░░░░░░░░   ~11%
+Total                  ████░░░░░░░░░░░░░░░░   ~22%
 ```

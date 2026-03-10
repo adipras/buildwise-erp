@@ -30,4 +30,5 @@ type User struct {
 	Role         Role   `gorm:"type:enum('owner','manajer','mandor','admin_keuangan');not null" json:"role"`
 	Telepon      string `gorm:"type:varchar(20)" json:"telepon"`
 	IsAktif      bool   `gorm:"default:true" json:"is_aktif"`
+	RefreshToken string `gorm:"type:varchar(500);index" json:"-"`
 }
