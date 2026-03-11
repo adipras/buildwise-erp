@@ -8,7 +8,7 @@
 | Auth & RBAC | ✅ Selesai | Backend + Frontend lengkap |
 | Modul RAB & Anggaran | ✅ Selesai | Backend + Frontend lengkap |
 | Modul Jadwal & Progress | ✅ Selesai | Backend + Frontend lengkap |
-| Modul Material & Stok | 🔲 Belum mulai | |
+| Modul Material & Stok | ✅ Selesai | Backend + Frontend lengkap |
 | Modul Tenaga Kerja | 🔲 Belum mulai | |
 | Dashboard & Laporan | 🔲 Belum mulai | |
 | Notifikasi WhatsApp | 🔲 Belum mulai | |
@@ -162,7 +162,57 @@
 
 ---
 
-## 🔲 FASE 5 — Modul Material & Stok
+## ✅ FASE 5 — Modul Material & Stok (Selesai)
+
+### Yang Sudah Dibuat
+
+**Backend:**
+- [x] `repository/material_repo.go` — CRUD Material (scoped perusahaan_id)
+- [x] `repository/supplier_repo.go` — CRUD Supplier
+- [x] `repository/stok_repo.go` — StokMaterial `GetOrCreate`/`Update` + PenggunaanMaterial create/list
+- [x] `repository/po_repo.go` — CRUD PurchaseOrder + PoItem (dengan Preload Supplier & Items.Material)
+- [x] `service/material_service.go` — CRUD Material + Supplier, validasi nama wajib
+- [x] `service/po_service.go` — CreatePO (multi-item), TerimaPO (update stok otomatis, cek is_kritis), DeletePO, ListStok (+ computed stok_sisa), PakaiMaterial (validasi stok cukup)
+- [x] `handler/material_handler.go` — 8 endpoint Material & Supplier
+- [x] `handler/po_handler.go` — 8 endpoint PO, Stok, Penggunaan
+- [x] `router/router.go` — semua route terdaftar dengan RBAC
+
+**Route yang ditambahkan:**
+```
+GET  /material                         — semua role
+POST /material                         — owner+manajer
+PATCH/DELETE /material/:id             — owner+manajer / owner
+GET  /supplier                         — semua role
+POST /supplier                         — owner+manajer
+PATCH/DELETE /supplier/:id             — owner+manajer / owner
+GET  /proyek/:id/stok                  — semua role
+POST /proyek/:id/stok/pakai            — semua member (mandor dll)
+GET  /proyek/:id/stok/penggunaan       — semua role
+GET  /proyek/:id/po                    — semua role
+POST /proyek/:id/po                    — owner+manajer
+GET  /proyek/:id/po/:po_id             — semua role
+POST /proyek/:id/po/:po_id/terima      — owner+manajer (update stok otomatis)
+DELETE /proyek/:id/po/:po_id           — owner saja
+```
+
+**Frontend:**
+- [x] `types/index.ts` — tambah `Material`, `Supplier`, `StatusPO`, `PoItem`, `PurchaseOrder`, `StokMaterial`, `StokInfo`, `PenggunaanMaterial`
+- [x] `hooks/useMaterial.ts` — semua query + mutation hooks (material, supplier, stok, PO, penggunaan)
+- [x] `components/Proyek/MaterialTab.tsx` — 3 sub-tabs:
+  - **Stok**: kartu grid dengan progress bar hijau/kuning/merah, banner alert KRITIS, modal catat pemakaian
+  - **Purchase Order**: tabel PO, tombol Terima/Hapus, modal buat PO multi-item dengan dynamic row + total nilai real-time
+  - **Riwayat Pemakaian**: tabel riwayat penggunaan material
+- [x] `pages/Proyek/ProyekDetail.tsx` — tambah tab "Material"
+
+### Verifikasi
+```
+✅ go build ./...  → 0 error
+✅ tsc --noEmit    → 0 error TypeScript
+```
+
+---
+
+## 🔲 FASE 6 — Modul Tenaga Kerja
 
 **Backend:**
 - [ ] Master material + generate kebutuhan dari koefisien SNI (20 koefisien)
@@ -238,11 +288,11 @@ Setup & Infrastruktur  ███████████████████
 Auth & RBAC            ████████████████████  100%  ✅
 RAB & Anggaran         ████████████████████  100%  ✅
 Jadwal & Progress      ████████████████████  100%  ✅
-Material & Stok        ░░░░░░░░░░░░░░░░░░░░    0%
+Material & Stok        ████████████████████  100%  ✅
 Tenaga Kerja           ░░░░░░░░░░░░░░░░░░░░    0%
 Dashboard & Laporan    ░░░░░░░░░░░░░░░░░░░░    0%
 Notifikasi             ░░░░░░░░░░░░░░░░░░░░    0%
 Deployment             ░░░░░░░░░░░░░░░░░░░░    0%
 ─────────────────────────────────────────────
-Total                  █████████░░░░░░░░░░░   ~44%
+Total                  ██████████████░░░░░░   ~56%
 ```

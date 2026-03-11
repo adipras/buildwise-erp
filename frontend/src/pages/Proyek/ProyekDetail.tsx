@@ -11,6 +11,7 @@ import { formatRupiah, formatTanggal } from '../../utils/format'
 import RabTab from '../../components/Proyek/RabTab'
 import PengeluaranTab from '../../components/Proyek/PengeluaranTab'
 import JadwalTab from '../../components/Proyek/JadwalTab'
+import MaterialTab from '../../components/Proyek/MaterialTab'
 
 // ─── Status badge config ──────────────────────────────────────────────────────
 const STATUS_CONFIG: Record<StatusProyek, { label: string; bg: string; text: string }> = {
@@ -140,7 +141,7 @@ function EditProyekModal({
 }
 
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
-type Tab = 'rab' | 'jadwal' | 'pengeluaran' | 'info'
+type Tab = 'rab' | 'jadwal' | 'pengeluaran' | 'material' | 'info'
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function ProyekDetailPage() {
@@ -185,6 +186,7 @@ export default function ProyekDetailPage() {
     { id: 'rab',         label: 'RAB'         },
     { id: 'jadwal',      label: 'Jadwal'      },
     { id: 'pengeluaran', label: 'Pengeluaran' },
+    { id: 'material',    label: 'Material'    },
     { id: 'info',        label: 'Info'        },
   ]
 
@@ -257,6 +259,7 @@ export default function ProyekDetailPage() {
         {activeTab === 'rab' && id && <RabTab proyekId={id} />}
         {activeTab === 'jadwal' && id && <JadwalTab proyekId={id} />}
         {activeTab === 'pengeluaran' && id && <PengeluaranTab proyekId={id} />}
+        {activeTab === 'material' && id && <MaterialTab proyekId={id} />}
         {activeTab === 'info' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <InfoCard label="Nilai Kontrak" value={formatRupiah(proyek.nilai_kontrak)} />

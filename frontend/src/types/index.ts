@@ -143,3 +143,76 @@ export interface ProgressSummary {
   weighted_planned: number
   is_late: boolean
 }
+
+// ─── Material & Stok ──────────────────────────────────────────────────────────
+
+export interface Material {
+  id: string
+  nama: string
+  satuan: string
+  harga_satuan: number
+  keterangan: string
+  perusahaan_id: string
+  created_at: string
+}
+
+export interface Supplier {
+  id: string
+  nama: string
+  telepon: string
+  alamat: string
+  kontak: string
+  perusahaan_id: string
+  created_at: string
+}
+
+export type StatusPO = 'draft' | 'dikirim' | 'diterima' | 'batal'
+
+export interface PoItem {
+  id: string
+  purchase_order_id: string
+  material_id: string
+  material?: Material
+  qty_dipesan: number
+  qty_diterima: number
+  harga_satuan: number
+}
+
+export interface PurchaseOrder {
+  id: string
+  proyek_id: string
+  supplier_id: string
+  supplier?: Supplier
+  nomor_po: string
+  tgl_po: string
+  total_nilai: number
+  status: StatusPO
+  items?: PoItem[]
+  created_at: string
+}
+
+export interface StokMaterial {
+  id: string
+  proyek_id: string
+  material_id: string
+  material?: Material
+  qty_masuk: number
+  qty_terpakai: number
+  stok_minimum: number
+  is_kritis: boolean
+}
+
+export interface StokInfo extends StokMaterial {
+  stok_sisa: number
+}
+
+export interface PenggunaanMaterial {
+  id: string
+  proyek_id: string
+  material_id: string
+  qty: number
+  keterangan: string
+  tgl_pakai: string
+  dibuat_oleh_id: string
+  created_at: string
+}

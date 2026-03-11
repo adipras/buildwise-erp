@@ -22,6 +22,8 @@ func Setup(app *fiber.App) {
 	rabH := handler.NewRabHandler()
 	pengeluaranH := handler.NewPengeluaranHandler()
 	jadwalH := handler.NewJadwalHandler()
+	materialH := handler.NewMaterialHandler()
+	poH := handler.NewPoHandler()
 
 	// Route publik
 	api.Post("/auth/login", authH.Login)
@@ -74,4 +76,28 @@ func Setup(app *fiber.App) {
 	priv.Delete("/proyek/:id/milestone/:mid/progress/:pid", ownerManajer, jadwalH.DeleteProgress)
 	priv.Get("/proyek/:id/kurva-s", jadwalH.GetKurvaS)
 	priv.Get("/proyek/:id/progress-summary", jadwalH.GetProgressSummary)
+
+	// Material (master data) — semua role bisa baca; owner+manajer bisa create/update; owner saja bisa delete
+	priv.Get("/material", materialH.ListMaterial)
+	priv.Post("/material", ownerManajer, materialH.CreateMaterial)
+	priv.Patch("/material/:id", ownerManajer, materialH.UpdateMaterial)
+	priv.Delete("/material/:id", ownerOnly, materialH.DeleteMaterial)
+
+	// Supplier — semua role bisa baca; owner+manajer bisa create/update; owner saja bisa delete
+	priv.Get("/supplier", materialH.ListSupplier)
+	priv.Post("/supplier", ownerManajer, materialH.CreateSupplier)
+	priv.Patch("/supplier/:id", ownerManajer, materialH.UpdateSupplier)
+	priv.Delete("/supplier/:id", ownerOnly, materialH.DeleteSupplier)
+
+	// Stok — semua role bisa baca; semua member bisa pakai material; penggunaan list bisa dibaca semua
+	priv.Get("/proyek/:id/stok", poH.ListStok)
+	priv.Post("/proyek/:id/stok/pakai", poH.PakaiMaterial)
+	priv.Get("/proyek/:id/stok/penggunaan", poH.ListPenggunaan)
+
+	// Purchase Order — semua role bisa baca; owner+manajer bisa create & terima; owner saja bisa delete
+	priv.Get("/proyek/:id/po", poH.ListPO)
+	priv.Post("/proyek/:id/po", ownerManajer, poH.CreatePO)
+	priv.Get("/proyek/:id/po/:po_id", poH.GetPO)
+	priv.Post("/proyek/:id/po/:po_id/terima", ownerManajer, poH.TerimaPO)
+	priv.Delete("/proyek/:id/po/:po_id", ownerOnly, poH.DeletePO)
 }
