@@ -61,9 +61,6 @@ export interface Milestone {
   status: StatusMilestone
 }
 
-export type StatusAbsensi = 'hadir' | 'setengah_hari' | 'lembur' | 'tidak_hadir'
-export type TipePekerja = 'mandor' | 'tukang' | 'kuli'
-
 export interface Pekerja {
   id: string
   nama: string
@@ -214,5 +211,64 @@ export interface PenggunaanMaterial {
   keterangan: string
   tgl_pakai: string
   dibuat_oleh_id: string
+  created_at: string
+}
+
+// ─── Tenaga Kerja ─────────────────────────────────────────────────────────────
+
+export type TipePekerja = 'mandor' | 'tukang' | 'kuli'
+export type StatusAbsensi = 'hadir' | 'setengah_hari' | 'lembur' | 'tidak_hadir'
+
+export interface PenugasanProyek {
+  id: string
+  proyek_id: string
+  pekerja_id: string
+  pekerja?: Pekerja
+  tgl_mulai: string
+  tgl_selesai?: string
+  is_aktif: boolean
+}
+
+export interface Absensi {
+  id: string
+  proyek_id: string
+  pekerja_id: string
+  pekerja?: Pekerja
+  tanggal: string
+  status: StatusAbsensi
+  jam_kerja: number
+  upah_harian: number
+  upah_dibayar: number
+  dicatat_oleh_id: string
+  created_at: string
+}
+
+export interface RekapUpahItem {
+  pekerja: Pekerja
+  absensi: Absensi[]
+  total_upah: number
+  jml_hadir: number
+  jml_setengah: number
+  jml_lembur: number
+  jml_absen: number
+}
+
+export interface RekapUpahResponse {
+  items: RekapUpahItem[]
+  total_semua: number
+}
+
+export interface PembayaranUpah {
+  id: string
+  proyek_id: string
+  pekerja_id: string
+  pekerja?: Pekerja
+  periode_mulai: string
+  periode_selesai: string
+  total_upah: number
+  is_approved: boolean
+  is_bayar: boolean
+  tgl_bayar?: string
+  pengeluaran_id?: string
   created_at: string
 }

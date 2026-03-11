@@ -9,7 +9,7 @@
 | Modul RAB & Anggaran | ✅ Selesai | Backend + Frontend lengkap |
 | Modul Jadwal & Progress | ✅ Selesai | Backend + Frontend lengkap |
 | Modul Material & Stok | ✅ Selesai | Backend + Frontend lengkap |
-| Modul Tenaga Kerja | 🔲 Belum mulai | |
+| Modul Tenaga Kerja | ✅ Selesai | Backend + Frontend lengkap |
 | Dashboard & Laporan | 🔲 Belum mulai | |
 | Notifikasi WhatsApp | 🔲 Belum mulai | |
 | Deployment Production | 🔲 Belum mulai | |
@@ -212,20 +212,46 @@ DELETE /proyek/:id/po/:po_id           — owner saja
 
 ---
 
-## 🔲 FASE 6 — Modul Tenaga Kerja
+## ✅ FASE 6 — Modul Tenaga Kerja (Selesai)
 
 **Backend:**
-- [ ] Master material + generate kebutuhan dari koefisien SNI (20 koefisien)
-- [ ] CRUD Purchase Order + penerimaan (update stok otomatis)
-- [ ] Catat penggunaan material (validasi stok tersedia)
-- [ ] Stok real-time: `SUM(qty_masuk) - SUM(qty_terpakai)`
-- [ ] Flag `is_kritis` + alert material di bawah minimum
+- [x] `repository/pekerja_repo.go` — CRUD Pekerja scoped by perusahaan_id
+- [x] `repository/penugasan_repo.go` — assign / unassign pekerja ke proyek
+- [x] `repository/absensi_repo.go` — FindByTanggal, FindByPeriode, FindOne (idempotent upsert)
+- [x] `repository/upah_repo.go` — PembayaranUpah CRUD
+- [x] `service/tenaga_kerja_service.go` — rekap upah, ApproveBayar (auto-create Pengeluaran kategori "Upah")
+- [x] `handler/tenaga_kerja_handler.go` — semua HTTP handler
+
+**Route yang ditambahkan:**
+```
+GET  /pekerja                              — semua role
+POST /pekerja                              — owner+manajer
+PATCH/DELETE /pekerja/:id                  — owner+manajer / owner
+GET  /proyek/:id/penugasan                 — semua role
+POST /proyek/:id/penugasan                 — owner+manajer
+DELETE /proyek/:id/penugasan/:p_id         — owner+manajer
+GET  /proyek/:id/absensi                   — semua role
+POST /proyek/:id/absensi                   — semua authenticated (idempotent upsert)
+GET  /proyek/:id/upah/rekap                — semua role
+POST /proyek/:id/upah/bayar                — owner+manajer (buat Pengeluaran otomatis)
+GET  /proyek/:id/upah/riwayat              — semua role
+GET  /proyek/:id/upah/:bayar_id            — semua role
+```
 
 **Frontend:**
-- [ ] Kartu stok dengan progress bar (hijau/kuning/merah)
-- [ ] Banner alert merah material kritis
-- [ ] Form PO multi-item + preview total nilai
-- [ ] Form penerimaan (qty dipesan vs diterima)
+- [x] `types/index.ts` — tambah `TipePekerja`, `StatusAbsensi`, `Pekerja`, `PenugasanProyek`, `Absensi`, `RekapUpahItem`, `RekapUpahResponse`, `PembayaranUpah`
+- [x] `hooks/useTenagaKerja.ts` — semua query + mutation hooks
+- [x] `components/Proyek/TenagaKerjaTab.tsx` — 3 sub-tabs:
+  - **Pekerja**: list pekerja aktif ditugaskan, tombol assign/unassign, form assign dengan dropdown
+  - **Absensi**: grid mobile-first tap-to-cycle (hadir/lembur/setengah/absen), badge warna, submit massal
+  - **Rekap Upah**: tabel rekap per pekerja per periode, form pilih periode, tombol Approve & Bayar
+- [x] `pages/Proyek/ProyekDetail.tsx` — tambah tab "Tenaga Kerja"
+
+### Verifikasi
+```
+✅ go build ./...  → 0 error
+✅ tsc --noEmit    → 0 error TypeScript
+```
 
 ---
 

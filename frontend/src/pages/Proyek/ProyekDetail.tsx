@@ -12,6 +12,7 @@ import RabTab from '../../components/Proyek/RabTab'
 import PengeluaranTab from '../../components/Proyek/PengeluaranTab'
 import JadwalTab from '../../components/Proyek/JadwalTab'
 import MaterialTab from '../../components/Proyek/MaterialTab'
+import TenagaKerjaTab from '../../components/Proyek/TenagaKerjaTab'
 
 // ─── Status badge config ──────────────────────────────────────────────────────
 const STATUS_CONFIG: Record<StatusProyek, { label: string; bg: string; text: string }> = {
@@ -141,7 +142,7 @@ function EditProyekModal({
 }
 
 // ─── Tabs ─────────────────────────────────────────────────────────────────────
-type Tab = 'rab' | 'jadwal' | 'pengeluaran' | 'material' | 'info'
+type Tab = 'rab' | 'jadwal' | 'pengeluaran' | 'material' | 'tenaga_kerja' | 'info'
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function ProyekDetailPage() {
@@ -183,11 +184,12 @@ export default function ProyekDetailPage() {
 
   const status = STATUS_CONFIG[proyek.status] ?? STATUS_CONFIG.aktif
   const tabs: { id: Tab; label: string }[] = [
-    { id: 'rab',         label: 'RAB'         },
-    { id: 'jadwal',      label: 'Jadwal'      },
-    { id: 'pengeluaran', label: 'Pengeluaran' },
-    { id: 'material',    label: 'Material'    },
-    { id: 'info',        label: 'Info'        },
+    { id: 'rab',          label: 'RAB'          },
+    { id: 'jadwal',       label: 'Jadwal'       },
+    { id: 'pengeluaran',  label: 'Pengeluaran'  },
+    { id: 'material',     label: 'Material'     },
+    { id: 'tenaga_kerja', label: 'Tenaga Kerja' },
+    { id: 'info',         label: 'Info'         },
   ]
 
   return (
@@ -260,6 +262,7 @@ export default function ProyekDetailPage() {
         {activeTab === 'jadwal' && id && <JadwalTab proyekId={id} />}
         {activeTab === 'pengeluaran' && id && <PengeluaranTab proyekId={id} />}
         {activeTab === 'material' && id && <MaterialTab proyekId={id} />}
+        {activeTab === 'tenaga_kerja' && id && <TenagaKerjaTab proyekId={id} />}
         {activeTab === 'info' && (
           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
             <InfoCard label="Nilai Kontrak" value={formatRupiah(proyek.nilai_kontrak)} />

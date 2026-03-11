@@ -24,6 +24,7 @@ func Setup(app *fiber.App) {
 	jadwalH := handler.NewJadwalHandler()
 	materialH := handler.NewMaterialHandler()
 	poH := handler.NewPoHandler()
+	tkH := handler.NewTenagaKerjaHandler()
 
 	// Route publik
 	api.Post("/auth/login", authH.Login)
@@ -100,4 +101,24 @@ func Setup(app *fiber.App) {
 	priv.Get("/proyek/:id/po/:po_id", poH.GetPO)
 	priv.Post("/proyek/:id/po/:po_id/terima", ownerManajer, poH.TerimaPO)
 	priv.Delete("/proyek/:id/po/:po_id", ownerOnly, poH.DeletePO)
+
+	// Pekerja (master data) — semua role bisa baca; owner+manajer bisa create/update; owner saja bisa delete
+	priv.Get("/pekerja", tkH.ListPekerja)
+	priv.Post("/pekerja", ownerManajer, tkH.CreatePekerja)
+	priv.Patch("/pekerja/:id", ownerManajer, tkH.UpdatePekerja)
+	priv.Delete("/pekerja/:id", ownerOnly, tkH.DeletePekerja)
+
+	// Penugasan ke proyek
+	priv.Get("/proyek/:id/pekerja", tkH.ListPekerjaProyek)
+	priv.Post("/proyek/:id/pekerja", ownerManajer, tkH.AssignPekerja)
+	priv.Delete("/proyek/:id/pekerja/:pekerja_id", ownerManajer, tkH.UnassignPekerja)
+
+	// Absensi — semua member bisa input (mandor di lapangan); semua bisa baca
+	priv.Get("/proyek/:id/absensi", tkH.GetAbsensi)
+	priv.Post("/proyek/:id/absensi", tkH.InputAbsensiMassal)
+
+	// Rekap & pembayaran upah — owner+manajer approve & bayar
+	priv.Get("/proyek/:id/rekap-upah", tkH.GetRekapUpah)
+	priv.Post("/proyek/:id/upah/approve-bayar", ownerManajer, tkH.ApproveBayar)
+	priv.Get("/proyek/:id/upah", tkH.ListPembayaranUpah)
 }
