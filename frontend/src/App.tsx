@@ -4,23 +4,13 @@ import { AuthProvider } from './hooks/useAuth'
 import ProtectedRoute from './components/ProtectedRoute'
 import AppLayout from './components/Layout/AppLayout'
 import Login from './pages/Login'
+import DashboardPage from './pages/Dashboard'
 import ProyekListPage from './pages/Proyek'
 import ProyekDetailPage from './pages/Proyek/ProyekDetail'
 
 const queryClient = new QueryClient({
   defaultOptions: { queries: { retry: 1, staleTime: 30_000 } },
 })
-
-function DashboardPage() {
-  return (
-    <div className="flex items-center justify-center min-h-[60vh]">
-      <div className="text-center">
-        <p className="text-primary font-bold text-2xl mb-1">Dashboard</p>
-        <p className="text-text-mid">Fase 4 — segera hadir 🚧</p>
-      </div>
-    </div>
-  )
-}
 
 export default function App() {
   return (

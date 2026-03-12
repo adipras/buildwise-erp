@@ -25,6 +25,8 @@ func Setup(app *fiber.App) {
 	materialH := handler.NewMaterialHandler()
 	poH := handler.NewPoHandler()
 	tkH := handler.NewTenagaKerjaHandler()
+	dashboardH := handler.NewDashboardHandler()
+	laporanH := handler.NewLaporanHandler()
 
 	// Route publik
 	api.Post("/auth/login", authH.Login)
@@ -121,4 +123,11 @@ func Setup(app *fiber.App) {
 	priv.Get("/proyek/:id/rekap-upah", tkH.GetRekapUpah)
 	priv.Post("/proyek/:id/upah/approve-bayar", ownerManajer, tkH.ApproveBayar)
 	priv.Get("/proyek/:id/upah", tkH.ListPembayaranUpah)
+
+	// Dashboard — semua role bisa baca
+	priv.Get("/dashboard/overview", dashboardH.GetOverview)
+	priv.Get("/dashboard/proyek/:id", dashboardH.GetProyekDashboard)
+
+	// Laporan — semua role bisa baca
+	priv.Get("/laporan/proyek/:id/keuangan", laporanH.GetLaporanKeuangan)
 }

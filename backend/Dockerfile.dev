@@ -1,9 +1,9 @@
 # Dockerfile untuk development — menggunakan air untuk hot reload
-FROM golang:1.22-alpine
+FROM golang:1.24-alpine
 
 RUN apk add --no-cache git curl
 
-# Install air (hot reload) — pin versi yang kompatibel dengan Go 1.22
+# Install air (hot reload) — pin versi yang kompatibel dengan Go 1.24
 RUN go install github.com/air-verse/air@v1.52.3
 
 WORKDIR /app

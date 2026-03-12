@@ -9,7 +9,7 @@ services:
       MYSQL_USER: buildwise
       MYSQL_PASSWORD: buildwise
     ports:
-      - "3306:3306"
+      - "3310:3306"
     volumes:
       - db_data:/var/lib/mysql
     healthcheck:
@@ -63,7 +63,7 @@ services:
     ports:
       - "3010:5173"
     environment:
-      VITE_API_URL: "http://localhost:8080"
+      VITE_API_URL: "http://api:8080"
     volumes:
       - ./frontend:/app
       - /app/node_modules

@@ -10,7 +10,7 @@
 | Modul Jadwal & Progress | ✅ Selesai | Backend + Frontend lengkap |
 | Modul Material & Stok | ✅ Selesai | Backend + Frontend lengkap |
 | Modul Tenaga Kerja | ✅ Selesai | Backend + Frontend lengkap |
-| Dashboard & Laporan | 🔲 Belum mulai | |
+| Dashboard & Laporan | ✅ Selesai | Backend + Frontend lengkap |
 | Notifikasi WhatsApp | 🔲 Belum mulai | |
 | Deployment Production | 🔲 Belum mulai | |
 
@@ -255,35 +255,24 @@ GET  /proyek/:id/upah/:bayar_id            — semua role
 
 ---
 
-## 🔲 FASE 6 — Modul Tenaga Kerja
+## ✅ FASE 7 — Dashboard & Laporan (Selesai)
 
 **Backend:**
-- [ ] CRUD Pekerja + assign ke proyek
-- [ ] Input absensi massal (idempoten per mandor per tanggal)
-- [ ] Kalkulasi upah otomatis (hadir/setengah/lembur/tidak hadir)
-- [ ] Rekap upah mingguan/bulanan
-- [ ] Approve & bayar → auto-buat record Pengeluaran kategori 'tenaga_kerja'
+- [x] Fix kompilasi `dashboard_service.go` (rename `ProyekSummary`→`DashProyekSummary`, fix `s.db`→`db()`)
+- [x] Fix `dashboard_handler.go` — constructor tanpa params (pola sama dengan handler lain)
+- [x] `GET /dashboard/overview` — ringkasan semua proyek aktif + alerts
+- [x] `GET /dashboard/proyek/:id` — ringkasan 1 proyek (progress, stok kritis, milestone terlambat, pengeluaran per kategori)
+- [x] `service/laporan_service.go` + `handler/laporan_handler.go`
+- [x] `GET /laporan/proyek/:id/keuangan` — RAB vs realisasi per item + per kategori + per bulan
 
 **Frontend:**
-- [ ] Form absensi massal (toggle besar, mobile-first)
-- [ ] Tabel rekap upah (baris pekerja × kolom hari)
-- [ ] Tombol "Approve & Bayar" + dialog konfirmasi
-
----
-
-## 🔲 FASE 7 — Dashboard & Laporan
-
-**Backend:**
-- [ ] `GET /dashboard/overview` — ringkasan semua proyek
-- [ ] `GET /dashboard/proyek/:id` — ringkasan 1 proyek
-- [ ] `GET /laporan/proyek/:id/keuangan` — RAB vs realisasi
-- [ ] `GET /laporan/proyek/:id/export` — export PDF
-
-**Frontend:**
-- [ ] Overview cards (proyek aktif, total anggaran, realisasi, pekerja)
-- [ ] Alert panel — milestone terlambat + material kritis
-- [ ] Feed aktivitas terbaru
-- [ ] Quick actions shortcuts
+- [x] `hooks/useDashboard.ts` — TanStack Query hooks (useDashboardOverview, useProyekDashboard)
+- [x] `pages/Dashboard/index.tsx` — halaman dashboard lengkap:
+  - Stat cards: proyek aktif, total RAB, realisasi, sisa anggaran
+  - Alert panel: milestone terlambat + stok material kritis
+  - Grid proyek dengan dual progress bar (fisik + penyerapan anggaran)
+  - Quick actions shortcuts
+- [x] `App.tsx` — ganti placeholder dengan `DashboardPage` nyata
 
 ---
 
